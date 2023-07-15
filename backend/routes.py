@@ -35,7 +35,9 @@ def count():
 ######################################################################
 @app.route("/picture", methods=["GET"])
 def get_pictures():
-    pass
+    if data:
+        return jsonify(data), 200
+    return {"message": "Internal server error"}, 500
 
 ######################################################################
 # GET A PICTURE
@@ -44,7 +46,12 @@ def get_pictures():
 
 @app.route("/picture/<int:id>", methods=["GET"])
 def get_picture_by_id(id):
-    pass
+    if data:
+        for i in data:
+            if i["id"] == id:
+                return i, 200
+        return {"message": "Resource not found"}, 404
+    return {"message": "Internal server error"}, 500
 
 
 ######################################################################
@@ -52,7 +59,13 @@ def get_picture_by_id(id):
 ######################################################################
 @app.route("/picture", methods=["POST"])
 def create_picture():
-    pass
+    image = request.json
+    for i in data:
+        if i["id"] == image["id"]:
+            return {"Message": f"picture with id {image['id']} already present"}, 302
+    data.append(image)
+    return image, 201
+    
 
 ######################################################################
 # UPDATE A PICTURE
@@ -61,11 +74,20 @@ def create_picture():
 
 @app.route("/picture/<int:id>", methods=["PUT"])
 def update_picture(id):
-    pass
+    image = request.json
+    for num, i in enumerate(data):
+        if i["id"] == image["id"]:
+            data[num] = image
+            return image, 201
+    return {"message": "picture not found"}, 404
 
 ######################################################################
 # DELETE A PICTURE
 ######################################################################
 @app.route("/picture/<int:id>", methods=["DELETE"])
 def delete_picture(id):
-    pass
+    for num, i in enumerate(data):
+        if i["id"] == id:
+            data.pop(num)
+            return "", 204
+    return {"message": "picture not found"}, 404
